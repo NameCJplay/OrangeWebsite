@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzkj.mapper.usermapper">
+	<!-- 手机号码注册账号 -->
+	<insert id="inserttell">
+		insert into users(userid,uzname,tellphone,pwd,time)
+		values(seq_users.nextval,#{tellphone},#{tellphone},#{pwd},#{time})
+	</insert>
+	<!-- 修改密码 -->
+	<update id="updatepassword">
+		update users set pwd=#{usernewpassword} where
+		userid=#{userid}
+	</update>
+	<!-- 修改或重置支付密码 -->
+	<update id="updatepay">
+		update users set paypwd=#{paypwd} where
+		userid=#{userid}
+	</update>
+	<!-- 修改或重置手机号码 -->
+	<update id="updatephone">
+		update users set tellphone=#{tellphone} where
+		userid=#{userid}
+	</update>
+	<!-- 地址管理,查询添加的所有省 -->
+	<select id="regionAll" resultType="com.dzkj.pojo.region">
+		select * from region where parent_id=1
+	</select>
+		<!-- 地址管理,查询添加的所有市和县 -->
+	<select id="regioncityAll" resultType="com.dzkj.pojo.region">
+		select * from region where parent_id=#{parent_id}
+	</select>
+	<!-- 地址管理,添加收货地址 -->
+		<insert id="insertaddress">
+		insert into address values(seq_address.nextval,#{userid},#{username},#{userphone},#{province},#{city},#{county},#{userintro},#{state})
+	</insert>
+	<!-- 查询登录用户的收货地址 -->
+	<select id="QueryAddress" resultType="com.dzkj.pojo.address">
+		select * from address where userid=#{userid}
+	</select>
+		<select id="QueryAddressCount" resultType="int">
+		select count(*) from address where userid=#{userid}
+	</select>
+	<!-- 默认地址状态为0 -->
+	<update id="statezero">
+		update address set state=0 where userid=#{userid}
+	</update>
+		<!-- 默认地址状态为1 -->
+	<update id="stateone">
+		update address set state=1 where aid=#{aid}
+	</update>
+	<update id="updateusers">
+		update users set  uzname=#{uzname},nikname=#{nikname}, usex=#{usex}, birthday=#{birthday}, tellphone=#{tellphone} ,email=#{email} where
+		userid=#{userid}
+	</update>
+	<!-- 订单查询 -->
+	<resultMap type="com.dzkj.pojo.orderss" id="ordermap">
+		<id property="oid" column="oid"/>
+		<result property="userid" column="userid"/>
+		<result property="nums" column="nums"/>
+		<result property="time" column="time"/>
+		<result property="id" column="id"/>
+		<result property="statu" column="statu"/>
+		<result property="shuliang" column="shuliang"/>
+		<result property="money" column="money"/>
+	<association property="product" javaType="com.dzkj.pojo.product">
+		<id property="pid" column="pid"/>
+		<result property="pname" column="pname"/>
+		<result property="price" column="price"/>
+		<result property="imgurl" column="imgurl"/>
+		<result property="inventory" column="inventory"/>
+		<result property="smalltype_id" column="smalltype_id"/>
+		<result property="chuchandi" column="chuchandi"/>
+	</association>
+	</resultMap>
+	<select id="QueryOrder" resultMap="ordermap">
+		select * from orderss o inner join product p on o.pid=p.pid and o.userid=#{userid}
+	</select>
+</mapper>

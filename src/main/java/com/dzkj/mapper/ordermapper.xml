@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzkj.mapper.ordermapper">
+<!-- 删除该商品 -->
+	<delete id="delorder">
+		delete from orderss where oid=#{oid}
+	</delete>
+	<!-- 订单商品数量增加金额改变-->
+	<update id="ordermoney">
+	update orderss set money=#{money},shuliang=#{shuliang} where oid=#{oid}
+	</update>
+	<!-- 确认收货 -->
+	<update id="affirm">
+	update orderss set statu=4 where oid=#{oid}
+	</update>
+	<!-- 支付成功通过订单id修改状态为支付状态 -->
+	<update id="orderpay">
+	update orderss set statu=2 where oid=#{oid}
+	</update>
+</mapper>

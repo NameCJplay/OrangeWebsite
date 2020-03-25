@@ -1,0 +1,186 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=0">
+
+<title>支付密码</title>
+
+<link href="../AmazeUI-2.4.2/assets/css/admin.css" rel="stylesheet"
+	type="text/css">
+<link href="../AmazeUI-2.4.2/assets/css/amazeui.css" rel="stylesheet"
+	type="text/css">
+
+<link href="../css/personal.css" rel="stylesheet" type="text/css">
+<link href="../css/stepstyle.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="../js/jquery-1.7.2.min.js"></script>
+<script src="../AmazeUI-2.4.2/assets/js/amazeui.js"></script>
+<script type="text/javascript">
+/* -------------------------------------------------------手机验证设置支付密码------------------------------------------------------------------------ */
+//获取验证码按钮
+function sendMobileCode() {
+	var phone =  $("#user-phone").text()
+	var TrueOrFalse = confirm("是否确定发送");
+		if (TrueOrFalse) {
+		$.ajax({
+			url : "tellpay",
+			type : "post",
+			data : 'phone=' + phone,
+			success : function(flag) {
+				var s = 60;
+				if (s >= 0) {
+					var interval=setInterval(function() {
+						$("#sendMobileCode").removeAttr('onclick');
+						$("#dyMobileButton").empty();
+						$("#dyMobileButton").append(s + "s");
+						s--;
+						if (s < 0) {
+							s=60;
+							clearInterval(interval);
+							$("#sendMobileCode").attr("onclick","sendMobileCode();");
+							$("#dyMobileButton").empty();
+							$("#dyMobileButton").append("获取");
+						}
+					}, 1000);
+				}
+				$("#register").empty();
+				$("#register").append("验证码发送成功！");
+			}
+		});
+	}
+}
+$(function() {
+	//注册按钮
+	$("[name='updatepay']").click(function() {
+		var phone =  $("#user-phone").text()
+		var code = $("#user-code").val();
+		var userid = $("#userid").val();
+		var passwordtell = $("#user-password").val();
+		var passwordRepeattell = $("#user-confirm-password").val();
+		if (code == "") {
+			$("#register").empty();
+			$("#register").append("请输入验证码！");
+			return;
+		} else if (passwordtell == "" || passwordRepeattell == "") {
+			$("#register").empty();
+			$("#register").append("两次密码都不能为空！");
+			return;
+		} else if (passwordtell != passwordRepeattell) {
+			$("#register").empty();
+			$("#register").append("两次密码不一致！");
+			return;
+		} else {
+			$.ajax({
+				url : "upay",
+				type : "post",
+				data : 'userid=' +userid+'&code=' + code+'&paypwd='+passwordtell,
+				success : function(flag) {
+					if (flag == "error") {
+						$("#register").empty();
+						$("#register").append("验证码错误！");
+					} else {
+						alert("支付密码设置成功！");
+						location.href = "setpaysuccess";
+					}
+				}
+			});
+		}
+	});
+});
+/* -------------------------------------------------------手机号码注册结束------------------------------------------------------------------------ */
+
+</script>
+</head>
+
+<body>
+<div th:include="person/index :: head"></div>
+	<b class="line"></b>
+	<div class="center">
+		<div class="col-main">
+			<div class="main-wrap">
+
+				<div class="am-cf am-padding">
+					<div class="am-fl am-cf">
+						<strong class="am-text-danger am-text-lg">支付密码</strong> / <small>Set&nbsp;Pay&nbsp;Password</small>
+					</div>
+				</div>
+				<hr />
+				<input type="hidden" th:value="${session.user.userid}" id="userid"/>
+				<!--进度条-->
+				<div class="m-progress">
+					<div class="m-progress-list">
+						<span class="step-1 step"> <em class="u-progress-stage-bg"></em>
+							<i class="u-stage-icon-inner">1<em class="bg"></em></i>
+							<p class="stage-name">设置支付密码</p>
+						</span> <span class="step-2 step"> <em class="u-progress-stage-bg"></em>
+							<i class="u-stage-icon-inner">2<em class="bg"></em></i>
+							<p class="stage-name">完成</p>
+						</span> <span class="u-progress-placeholder"></span>
+					</div>
+					<div class="u-progress-bar total-steps-2">
+						<div class="u-progress-bar-inner"></div>
+					</div>
+				</div>
+				<form class="am-form am-form-horizontal">
+					<div class="am-form-group bind">
+						<label for="user-phone" class="am-form-label">验证手机</label>
+						<div class="am-form-content">
+							<span id="user-phone" th:text="${session.user.tellphone}"></span>
+						</div>
+					</div>
+					<div class="am-form-group code">
+						<label for="user-code" class="am-form-label">验证码</label>
+						<div class="am-form-content">
+							<input type="tel" id="user-code" placeholder="短信验证码">
+						</div>
+						<a class="btn" href="javascript:void(0);"
+							onclick="sendMobileCode();" id="sendMobileCode">
+							<div class="am-btn am-btn-danger" id="dyMobileButton">验证码</div>
+						</a>
+					</div>
+					<div class="am-form-group">
+						<label for="user-password" class="am-form-label">支付密码</label>
+						<div class="am-form-content">
+							<input type="password" id="user-password" placeholder="6位数字">
+						</div>
+					</div>
+					<div class="am-form-group">
+						<label for="user-confirm-password" class="am-form-label">确认密码</label>
+						<div class="am-form-content">
+							<input type="password" id="user-confirm-password"
+								placeholder="请再次输入上面的密码"> <span id="register"></span>
+						</div>
+					</div>
+					<div class="info-btn">
+						<div class="am-btn am-btn-danger" name="updatepay">保存修改</div>
+					</div>
+
+				</form>
+
+			</div>
+			<!--底部-->
+			<div class="footer">
+				<div class="footer-hd">
+					<p>
+						<a href="#">卓鼎教育</a> <b>|</b> <a href="#">商城首页</a> <b>|</b> <a
+							href="#">支付宝</a> <b>|</b> <a href="#">物流</a>
+					</p>
+				</div>
+				<div class="footer-bd">
+					<p style="text-align: center;">
+						<a href="#">合作伙伴</a> <a href="#">联系我们</a> <a href="#">网站地图</a> <em
+							style="text-align: center;">© 2015-2025 zking 版权所有</em>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div th:include="person/index :: menu"></div>
+	</div>
+
+</body>
+
+</html>

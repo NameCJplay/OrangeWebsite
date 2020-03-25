@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzkj.mapper.ProductMapper">
+		
+		<resultMap type="com.dzkj.pojo.product" id="Findbyid">
+			<id column="pid" property="pid"/>
+			<result column="pname" property="pname"/>
+			<result column="price" property="price"/>
+			<result column="imgurl" property="imgurl"/>
+			<result column="inventory" property="inventory"/>
+			<result column="chuchandi" property="chuchandi"/>
+			
+		<association property="parame" javaType="com.dzkj.pojo.Proparameter">
+			<id column="pa_id" property="pa_id"/>
+			<result column="p_id" property="p_id"/>
+			<result column="par1" property="par1"/>
+			<result column="par2" property="par2"/>
+			<result column="par3" property="par3"/>
+			<result column="par4" property="par4"/>
+			<result column="par5" property="par5"/>
+			<result column="par6" property="par6"/>
+			<result column="par7" property="par7"/>
+			<result column="par8" property="par8"/>
+			<result column="par9" property="par9"/>
+			<result column="par10" property="par10"/>
+			<result column="par11" property="par11"/>
+		</association>
+		
+		<collection property="pralist" ofType="com.dzkj.pojo.Pramater">
+			<id column="id" property="id"/>
+			<result column="country" property="country"/>
+			<result column="dimg" property="imgurl"/>
+		</collection>
+		
+		</resultMap>
+		
+		<select id="Findbyid" resultMap="Findbyid">	
+		select d.*,t.id,t.country,t.imgurl as dimg,m.* from product d join pramater t on d.pid=t.did join proparameter m on m.p_id=d.pid where pid=#{id}
+		</select>
+	
+</mapper>

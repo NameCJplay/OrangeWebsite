@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzkj.mapper.shopcartMapper">
+<insert id="addshopcar">
+insert into shopcart values(s_cat.nextval,#{userid},#{nums},#{pid})
+</insert>
+<!-- 查询购物车商品 -->
+<resultMap type="com.dzkj.pojo.shopcart" id="shopcart">
+	<id property="sid" column="sid"/>
+		<result property="userid" column="userid"/>
+		<result property="nums" column="nums"/>
+	<association property="product" javaType="com.dzkj.pojo.product">
+		<id property="pid" column="pid"/>
+		<result property="pname" column="pname"/>
+		<result property="price" column="price"/>
+		<result property="imgurl" column="imgurl"/>
+		<result property="inventory" column="inventory"/>
+		<result property="smalltype_id" column="smalltype_id"/>
+		<result property="chuchandi" column="chuchandi"/>
+	</association>
+</resultMap>
+<select id="findshopcart" resultMap="shopcart">
+	select * from shopcart s inner join product p on s.pid=p.pid and s.userid=#{userid}
+</select>
+<!-- 购物车支付失败添加微支付订单 -->
+<insert id="addorder">
+	insert into orderss values(seq_orderss.nextval,#{userid},#{nums},#{time},#{id},1,#{pid},#{shuliang},#{money})
+</insert>
+<!-- 支付成功修改状态 -->
+<update id="shopcartsuccess">
+	update orderss set statu=2 where nums=#{nums}
+</update>
+<!-- 查询购物车数量 -->
+<select id="queryshopcartcount" resultType="int">
+	select count(*) from shopcart where userid=#{userid}
+</select>
+<!-- 加入购物车时查询商品是否存在 -->
+<select id="queryshopcart" resultType="com.dzkj.pojo.shopcart">
+	select * from shopcart where userid=#{userid} and pid=#{pid}
+</select>
+<!-- 加入购物车时商品存在数量加一 -->
+<update id="addshopcartnums">
+	update shopcart set nums=#{nums} where userid=#{userid} and pid=#{pid}
+</update>
+<!-- 加入购物车时商品不存在增加商品到购物车 -->
+<insert id="addshopcart">
+	insert into shopcart values(seq_shopcart.nextval,#{userid},#{nums},#{pid})
+</insert>
+<!-- 购买成功购物车订单删除 -->
+<delete id="delsid">
+	delete from shopcart where sid=#{sid}
+</delete>
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzkj.mapper.smalltypeMapper">
+	
+	<!-- 商品表-分类表 -->
+	<resultMap type="com.dzkj.pojo.smalltype" id="findalll">
+		<id column="id" property="id"/>
+		<result column="type" property="type"/>
+		<result column="tag" property="tag"/>
+		<collection property="plist" ofType="com.dzkj.pojo.product">
+			<id column="pid" property="pid"/>
+			<result column="pname" property="pname"/>
+			<result column="price" property="price"/>
+			<result column="imgurl" property="imgurl"/>
+			<result column="inventory" property="inventory"/>
+			<result column="chuchandi" property="chuchandi"/>
+		</collection>
+	</resultMap>
+	<!-- 搜索框查询 -->
+	<resultMap type="com.dzkj.pojo.smalltype" id="search">
+		<id column="id" property="id"/>
+		<result column="type" property="type"/>
+		<result column="tag" property="tag"/>
+		<collection property="plist" ofType="com.dzkj.pojo.product">
+			<id column="pid" property="pid"/>
+			<result column="pname" property="pname"/>
+			<result column="price" property="price"/>
+			<result column="imgurl" property="imgurl"/>
+			<result column="inventory" property="inventory"/>
+			<result column="chuchandi" property="chuchandi"/>
+		</collection>
+		<collection property="buslist" ofType="com.dzkj.pojo.business">
+			<id column="b_id" property="b_id"/>
+			<result column="b_name" property="b_name"/>
+		</collection>
+	</resultMap>
+	
+	
+	<!-- 商品表-分类表 查所有 -->
+	<select id="FindOne" resultType="com.dzkj.pojo.smalltype">
+		select * from smalltype where tag=0
+	</select>
+	<select id="FindTwo" resultType="com.dzkj.pojo.smalltype">
+		select * from smalltype where tag=#{tago}
+	</select>
+	<select id="Findall" resultMap="findalll">
+		select * from smalltype s join product p on p.smalltype_id=s.id
+	</select>
+	
+	
+	<!-- 搜索框查询 -->
+	<select id="Search" resultMap="search" parameterType="String">
+	<bind name="Test" value="'%'+_parameter+'%'"/>
+	select * from smalltype s join product p on p.smalltype_id=s.id join business b on b.b_typeid=s.id
+where p.pname like #{Test}
+	</select>
+	
+</mapper>

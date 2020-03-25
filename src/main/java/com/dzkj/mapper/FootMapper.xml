@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper  
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dzkj.mapper.FootMapper">
+
+<resultMap type="com.dzkj.pojo.Foot" id="Find">
+	<id column="id" property="id"/>
+	<result column="userid" property="userid"/>
+	<result column="foottime" property="foottime"/>
+	<association property="prd" javaType="com.dzkj.pojo.product" column="pid">
+			<id column="pid" property="pid"/>
+			<result column="pname" property="pname"/>
+			<result column="price" property="price"/>
+			<result column="imgurl" property="imgurl"/>
+			<result column="inventory" property="inventory"/>
+			<result column="chuchandi" property="chuchandi"/>
+	</association>
+</resultMap>
+
+
+
+
+<insert id="addfoot" parameterType="com.dzkj.pojo.Foot">
+	insert into foot values(seq_foot.nextval,#{userid},#{prd.pid},#{foottime})
+</insert>
+
+<select id="Findall" resultMap="Find">
+	select * from foot f join product p on f.pid=p.pid where userid=#{userid}
+</select>
+
+<delete id="Delfoot">
+	delete from foot where id=#{id}
+</delete>
+
+</mapper>
